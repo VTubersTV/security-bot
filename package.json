@@ -13,7 +13,7 @@
 		"dev:debug": "nodemon src/index.ts /debug",
 		"start": "node dist/index.js",
 		"deploy-commands": "node scripts/deployCommands.js",
-		"build:css": "tailwindcss ./src/server/public/css/input.css -o ./src/server/public/css/style.css --watch"
+		"build:css": "tailwindcss -i ./src/server/public/css/input.css -o ./src/server/public/css/style.css"
 	},
 	"repository": {
 		"type": "git",
