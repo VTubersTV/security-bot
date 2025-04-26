@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-gray-100 dark:bg-discord-dark-200;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-gray-300 dark:bg-discord-dark-100 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-400 dark:bg-discord-dark-300;
+    }
+
+    /* Selection */
+    ::selection {
+        @apply bg-discord-primary/20 text-discord-primary dark:text-discord-primary-light;
+    }
+
+    /* Focus Outline */
+    *:focus-visible {
+        @apply outline-none ring-2 ring-discord-primary ring-offset-2 ring-offset-white dark:ring-offset-discord-dark-200;
+    }
+}
+
+@layer components {
+    /* Button Base */
+    .btn-base {
+        @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    /* Primary Button */
+    .btn-primary {
+        @apply btn-base bg-discord-primary text-white hover:bg-discord-primary-dark focus:ring-discord-primary;
+    }
+
+    /* Secondary Button */
+    .btn-secondary {
+        @apply btn-base border-2 border-discord-primary text-discord-primary hover:bg-discord-primary/5 focus:ring-discord-primary dark:text-discord-primary-light;
+    }
+
+    /* Card Base */
+    .card-base {
+        @apply bg-white dark:bg-discord-dark-100 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 transition-all duration-200;
+    }
+
+    /* Input Base */
+    .input-base {
+        @apply w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-discord-dark-100 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-discord-primary focus:border-transparent transition-all duration-200;
+    }
+}
+
+@layer utilities {
+    /* Animation Utilities */
+    .animate-slide-up {
+        animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .animate-slide-down {
+        animation: slide-down 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .animate-fade-in {
+        animation: fade-in 0.4s ease-out;
+    }
+
+    /* Backdrop Blur Utilities */
+    .backdrop-blur-xs {
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
+
+    .backdrop-blur-sm {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .backdrop-blur-md {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    .backdrop-blur-lg {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+}
+
+/* Animation Keyframes */
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+} 

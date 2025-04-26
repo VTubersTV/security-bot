@@ -1,0 +1,286 @@
+<%- include('layout') %>
+
+<div class="max-w-4xl mx-auto">
+    <div class="card-base overflow-hidden animate-slide-up">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-discord-primary to-discord-primary-dark px-6 py-4">
+            <h1 class="text-2xl font-bold text-white flex items-center">
+                <i class="bi bi-shield-lock mr-2"></i>
+                Privacy Policy
+            </h1>
+            <p class="text-white/80 mt-2 flex items-center">
+                <i class="bi bi-calendar3 mr-2"></i>
+                Last updated: <%= updated %>
+            </p>
+        </div>
+
+        <div class="p-6 space-y-8">
+            <!-- Introduction -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">1.</span>
+                    Introduction
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>
+                        This Privacy Policy explains how VTubers.TV's Discord Verification System collects, uses, and protects your personal information. We are committed to ensuring the security and privacy of all users going through our verification process.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Information We Collect -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">2.</span>
+                    Information We Collect
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="bi bi-discord text-discord-primary mr-2"></i>
+                                Discord Information
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-person-badge text-discord-primary mr-2"></i>
+                                    Discord User ID
+                                </div>
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-person text-discord-primary mr-2"></i>
+                                    Username
+                                </div>
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-image text-discord-primary mr-2"></i>
+                                    Avatar
+                                </div>
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-key text-discord-primary mr-2"></i>
+                                    Access tokens
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="bi bi-cpu text-discord-primary mr-2"></i>
+                                Technical Information
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-globe text-discord-primary mr-2"></i>
+                                    IP address
+                                </div>
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-window text-discord-primary mr-2"></i>
+                                    Browser type and version
+                                </div>
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-geo-alt text-discord-primary mr-2"></i>
+                                    Geographic location
+                                </div>
+                                <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                                    <i class="bi bi-phone text-discord-primary mr-2"></i>
+                                    Device information
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How We Use Your Information -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">3.</span>
+                    How We Use Your Information
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>We use your information for:</p>
+                    <br>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-shield-check text-discord-primary mr-2"></i>
+                            Verifying your identity
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-robot text-discord-primary mr-2"></i>
+                            Preventing automated bots
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-shield-exclamation text-discord-primary mr-2"></i>
+                            Detecting and preventing abuse
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-lock text-discord-primary mr-2"></i>
+                            Managing server access
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Measures -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">4.</span>
+                    Security Measures
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>We protect your information through:</p>
+                    <br>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-shield-lock text-discord-primary mr-2"></i>
+                            Secure session management
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-speedometer2 text-discord-primary mr-2"></i>
+                            IP quality score verification
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-eye-slash text-discord-primary mr-2"></i>
+                            VPN/Proxy detection
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-lock text-discord-primary mr-2"></i>
+                            Encrypted transmission
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Retention -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">5.</span>
+                    Data Retention
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>We retain data as follows:</p>
+                    <br>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-clock-history text-discord-primary mr-2"></i>
+                            Session data: 24 hours
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-shield-lock text-discord-primary mr-2"></i>
+                            IP security cache: 6 hours
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-arrow-repeat text-discord-primary mr-2"></i>
+                            Verification attempts: Duration of timeout
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-key text-discord-primary mr-2"></i>
+                            Discord tokens: Until logout/expiration
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Third-Party Services -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">6.</span>
+                    Third-Party Services
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>We use the following third-party services:</p>
+                    <br>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-discord text-discord-primary mr-2"></i>
+                            Discord API for authentication
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-shield-check text-discord-primary mr-2"></i>
+                            IPQualityScore for threat detection
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-cloud text-discord-primary mr-2"></i>
+                            Cloudflare for DDoS protection
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Your Rights -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">7.</span>
+                    Your Rights
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>You have the right to:</p>
+                    <br>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-file-earmark-text text-discord-primary mr-2"></i>
+                            Access your personal data
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-trash text-discord-primary mr-2"></i>
+                            Request data deletion
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-box-arrow-right text-discord-primary mr-2"></i>
+                            Opt-out of verification
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-exclamation-circle text-discord-primary mr-2"></i>
+                            Lodge complaints
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Changes to Privacy Policy -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">8.</span>
+                    Changes to Privacy Policy
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="bi bi-pencil text-discord-primary mr-2"></i>
+                        <p>
+                            We may update this Privacy Policy periodically. Continued use of the service after changes constitutes acceptance of the updated policy.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">9.</span>
+                    Contact
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="bi bi-chat-dots text-discord-primary mr-2"></i>
+                        <p>
+                            For privacy-related inquiries, please contact us through the VTubers.TV Discord server.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<style>
+    .prose h2 {
+        @apply text-2xl font-bold mb-4 text-gray-900 dark:text-white;
+    }
+    .prose p {
+        @apply text-gray-700 dark:text-gray-300 leading-relaxed;
+    }
+    .prose ul {
+        @apply list-none p-0 m-0;
+    }
+    .card-base {
+        @apply bg-white dark:bg-discord-dark-300 shadow-lg rounded-xl;
+    }
+</style> 

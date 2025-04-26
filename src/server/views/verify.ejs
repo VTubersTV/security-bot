@@ -1,0 +1,114 @@
+<%- include('layout') %>
+
+<div class="max-w-2xl mx-auto">
+    <div class="card-base overflow-hidden animate-slide-up">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-discord-primary to-discord-primary-dark px-6 py-4 text-center">
+            <h2 class="text-2xl font-bold text-white">Account Verification</h2>
+        </div>
+
+        <div class="p-6 space-y-8">
+            <!-- User Info -->
+            <div class="text-center">
+                <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.<%= user.avatar.startsWith('a_') ? 'gif' : 'png' %>" 
+                     alt="<%= user.username %>" 
+                     class="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg"
+                     loading="lazy">
+                <h4 class="text-xl font-bold text-gray-900 dark:text-white"><%= user.username %></h4>
+                <p class="text-gray-500 dark:text-gray-400">Discord ID: <%= user.id %></p>
+            </div>
+
+            <!-- Security Info -->
+            <div class="bg-blue-50 dark:bg-discord-dark-200 rounded-lg p-4 border border-blue-100 dark:border-discord-dark-300">
+                <div class="flex items-center mb-2">
+                    <i class="bi bi-shield-check text-discord-info text-xl mr-2"></i>
+                    <h5 class="text-lg font-semibold text-discord-info">Security Check</h5>
+                </div>
+                <p class="text-gray-600 dark:text-gray-300">We're verifying your account to ensure server security.</p>
+            </div>
+
+            <% if (ipData) { %>
+            <!-- Location Info -->
+            <div class="space-y-4">
+                <h5 class="flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                    <i class="bi bi-geo-alt text-discord-primary mr-2"></i>
+                    Location Information
+                </h5>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-discord-dark-200 rounded-lg">
+                        <span class="text-gray-600 dark:text-gray-300">Country</span>
+                        <span class="px-3 py-1 bg-discord-primary/10 text-discord-primary dark:text-discord-primary-light rounded-full text-sm font-medium">
+                            <%= ipData.country || 'Unknown' %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Verification Form -->
+            <form action="/verify" method="POST" class="space-y-6">
+                <!-- Terms and Conditions -->
+                <div class="flex items-center">
+                    <input type="checkbox" 
+                           id="agreeTerms" 
+                           required
+                           class="w-5 h-5 rounded border-gray-300 text-discord-primary focus:ring-discord-primary">
+                    <label for="agreeTerms" class="ml-3 text-gray-700 dark:text-gray-300">
+                        I agree to follow the server rules and guidelines
+                    </label>
+                </div>
+
+                <!-- Anti-Bot Check -->
+                <div class="flex items-center">
+                    <input type="checkbox" 
+                           id="notBot" 
+                           required
+                           class="w-5 h-5 rounded border-gray-300 text-discord-primary focus:ring-discord-primary">
+                    <label for="notBot" class="ml-3 text-gray-700 dark:text-gray-300">
+                        I confirm that I am not a bot
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="btn-primary w-full"
+                        disabled>
+                    <i class="bi bi-check-circle mr-2"></i>
+                    Complete Verification
+                </button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-gray-200 dark:border-gray-700 p-4 text-center">
+            <span class="text-gray-500 dark:text-gray-400 text-sm">
+                Having trouble? 
+                <a href="https://vtubers.tv/discord" 
+                   target="_blank"
+                   class="text-discord-primary hover:text-discord-primary-dark dark:text-discord-primary-light transition-colors">
+                    Join our Discord
+                </a> 
+                for assistance
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Form Validation Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+
+    function validateForm() {
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        submitBtn.disabled = !allChecked;
+        submitBtn.classList.toggle('opacity-50', !allChecked);
+        submitBtn.classList.toggle('cursor-not-allowed', !allChecked);
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', validateForm));
+    validateForm();
+});
+</script> 

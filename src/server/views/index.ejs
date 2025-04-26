@@ -1,0 +1,191 @@
+<%- include('layout') %>
+
+<div class="space-y-16">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-8 min-h-[75vh] items-center">
+                <div class="sm:text-center lg:text-left lg:col-span-6 animate-slide-up">
+                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+                        Welcome to VTubers.TV
+                    </h1>
+                    <p class="mt-6 text-xl text-gray-500 dark:text-gray-300">
+                        Join our vibrant community of VTuber enthusiasts! Complete a quick verification to access our Discord server and connect with fellow fans.
+                    </p>
+                    <div class="mt-8 flex flex-col sm:flex-row sm:justify-center lg:justify-start gap-4">
+                        <% if (user) { %>
+                            <a href="/verify" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-discord-primary hover:bg-discord-primary-dark transition-colors">
+                                <i class="bi bi-shield-check mr-2"></i>
+                                Complete Verification
+                            </a>
+                        <% } else { %>
+                            <a href="/auth/login" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-discord-primary hover:bg-discord-primary-dark transition-colors">
+                                <i class="bi bi-discord mr-2"></i>
+                                Login with Discord
+                            </a>
+                        <% } %>
+                        <a href="https://vtubers.tv/discord" 
+                           class="inline-flex items-center px-6 py-3 border border-discord-primary text-base font-medium rounded-lg text-discord-primary dark:text-discord-primary-light bg-transparent hover:bg-discord-primary/5 transition-colors"
+                           target="_blank">
+                            <i class="bi bi-info-circle mr-2"></i>
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden lg:block lg:col-span-6">
+                    <div class="relative animate-slide-up delay-100 perspective-1000">
+                        <div class="transform-style-3d hover:rotate-y-6 hover:rotate-x-3 transition-transform duration-300 ease-out">
+                            <img 
+                                src="/img/hero-illustration.svg" 
+                                alt="VTubers.TV Community" 
+                                class="w-full h-auto filter drop-shadow-2xl"
+                            >
+                            <div class="absolute inset-0 bg-gradient-to-br from-discord-primary/10 to-transparent rounded-xl backdrop-blur-sm"></div>
+                            
+                            <!-- 3D lighting effects -->
+                            <div class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity rounded-xl"></div>
+                            <div class="absolute inset-0 bg-gradient-to-bl from-black/10 to-transparent opacity-0 hover:opacity-100 transition-opacity rounded-xl"></div>
+                            
+                            <!-- 3D floating animation -->
+                            <div class="absolute inset-0 animate-float">
+                                <div class="absolute inset-0 bg-gradient-to-r from-discord-primary/5 to-purple-500/5 rounded-xl mix-blend-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="animate-slide-up delay-200">
+                    <div class="h-full p-8 rounded-xl bg-white dark:bg-discord-dark-100 shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all border border-gray-100 dark:border-gray-800">
+                        <i class="bi bi-shield-check text-4xl text-discord-primary mb-6"></i>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Secure Verification</h3>
+                        <p class="text-gray-500 dark:text-gray-400">Our verification system ensures a safe and trustworthy community environment.</p>
+                    </div>
+                </div>
+                <div class="animate-slide-up delay-400">
+                    <div class="h-full p-8 rounded-xl bg-white dark:bg-discord-dark-100 shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all border border-gray-100 dark:border-gray-800">
+                        <i class="bi bi-chat-dots-fill text-4xl text-discord-primary mb-6"></i>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Exclusive Access</h3>
+                        <p class="text-gray-500 dark:text-gray-400">Get access to special channels, events, and community features.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <% if (guild) { %>
+    <!-- Server Stats -->
+    <section class="relative">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="animate-slide-up">
+                <div class="p-8 rounded-xl bg-white dark:bg-discord-dark-100 shadow-lg border border-gray-100 dark:border-gray-800">
+                    <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.<%= guild.icon.startsWith('a_') ? 'gif' : 'png' %>" 
+                         alt="<%= guild.name %>" 
+                         class="w-24 h-24 mx-auto rounded-full shadow-lg mb-6"
+                         loading="lazy">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4"><%= guild.name %></h2>
+                    <p class="text-lg text-gray-500 dark:text-gray-400">
+                        <i class="bi bi-people-fill mr-2"></i>
+                        <%= guild.memberCount.toLocaleString() %> members and growing!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <% } %>
+</div>
+
+<!-- Custom Styles -->
+<style>
+.landing-page {
+    overflow-x: hidden;
+}
+
+.hero {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, rgba(114, 137, 218, 0.1) 0%, transparent 100%);
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.hero-image {
+    position: relative;
+}
+
+.hero-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: radial-gradient(circle at center, rgba(114, 137, 218, 0.1) 0%, transparent 70%);
+    z-index: -1;
+}
+
+.feature-card {
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-speed) ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.server-card {
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.server-icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .feature-card,
+    .server-card {
+        background-color: rgba(32, 34, 37, 0.9);
+    }
+
+    .bg-light {
+        background-color: rgba(32, 34, 37, 0.5) !important;
+    }
+}
+
+/* Animation Classes */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+}
+
+.animate-on-scroll.animate__animated {
+    opacity: 1;
+    transform: translateY(0);
+}
+</style> 

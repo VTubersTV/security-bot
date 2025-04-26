@@ -1,0 +1,137 @@
+<%- include('../layout') %>
+
+<div class="max-w-3xl mx-auto">
+    <div class="card-base overflow-hidden animate-slide-up">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-discord-primary to-discord-primary-dark px-6 py-4">
+            <h1 class="text-2xl font-bold text-white flex items-center">
+                <i class="bi bi-shield-lock mr-2"></i>
+                Unban Request Status
+            </h1>
+            <p class="text-white/80 mt-2">
+                Request Code: <code class="font-mono"><%= request.requestCode %></code>
+            </p>
+        </div>
+
+        <div class="p-6 space-y-8">
+            <!-- Status Banner -->
+            <div class="<%= 
+                request.status === 'PENDING' ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900' :
+                request.status === 'APPROVED' ? 'bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900' :
+                request.status === 'DENIED' ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900' :
+                'bg-gray-50 dark:bg-gray-900/20 border-gray-100 dark:border-gray-900'
+            %> rounded-lg p-4 border">
+                <div class="flex items-center">
+                    <i class="<%= 
+                        request.status === 'PENDING' ? 'bi bi-hourglass text-blue-500' :
+                        request.status === 'APPROVED' ? 'bi bi-check-circle-fill text-green-500' :
+                        request.status === 'DENIED' ? 'bi bi-x-circle-fill text-red-500' :
+                        'bi bi-dash-circle-fill text-gray-500'
+                    %> text-2xl mr-3"></i>
+                    <div>
+                        <h3 class="font-semibold <%= 
+                            request.status === 'PENDING' ? 'text-blue-700 dark:text-blue-300' :
+                            request.status === 'APPROVED' ? 'text-green-700 dark:text-green-300' :
+                            request.status === 'DENIED' ? 'text-red-700 dark:text-red-300' :
+                            'text-gray-700 dark:text-gray-300'
+                        %>">
+                            Status: <%= request.status %>
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400">
+                            <%= 
+                                request.status === 'PENDING' ? 'Your request is being reviewed by our moderation team.' :
+                                request.status === 'APPROVED' ? 'Your unban request has been approved! You can now rejoin the server.' :
+                                request.status === 'DENIED' ? 'Your unban request has been denied.' :
+                                'This request has expired.'
+                            %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Request Details -->
+            <div class="space-y-6">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Request Details</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Submission Date -->
+                    <div class="p-4 bg-gray-50 dark:bg-discord-dark-200 rounded-lg">
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Submitted</div>
+                        <div class="text-gray-900 dark:text-white mt-1">
+                            <%= new Date(request.createdAt).toLocaleDateString() %>
+                        </div>
+                    </div>
+
+                    <!-- User ID -->
+                    <div class="p-4 bg-gray-50 dark:bg-discord-dark-200 rounded-lg">
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Discord User ID</div>
+                        <div class="text-gray-900 dark:text-white mt-1 font-mono">
+                            <%= request.userId %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ban Reason -->
+                <div class="p-4 bg-gray-50 dark:bg-discord-dark-200 rounded-lg">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Original Ban Reason</div>
+                    <div class="text-gray-900 dark:text-white mt-1">
+                        <%= request.banReason %>
+                    </div>
+                </div>
+
+                <!-- Appeal Message -->
+                <div class="p-4 bg-gray-50 dark:bg-discord-dark-200 rounded-lg">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Your Appeal</div>
+                    <div class="text-gray-900 dark:text-white mt-1 whitespace-pre-wrap">
+                        <%= request.appealMessage %>
+                    </div>
+                </div>
+
+                <% if (request.evidence) { %>
+                <!-- Evidence -->
+                <div class="p-4 bg-gray-50 dark:bg-discord-dark-200 rounded-lg">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Additional Evidence</div>
+                    <div class="text-gray-900 dark:text-white mt-1 whitespace-pre-wrap">
+                        <%= request.evidence %>
+                    </div>
+                </div>
+                <% } %>
+
+                <% if (request.moderatorResponse) { %>
+                <!-- Moderator Response -->
+                <div class="p-4 bg-gray-50 dark:bg-discord-dark-200 rounded-lg border-l-4 border-discord-primary">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Moderator Response</div>
+                    <div class="text-gray-900 dark:text-white mt-1">
+                        <%= request.moderatorResponse %>
+                    </div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        Handled on <%= new Date(request.handledAt).toLocaleDateString() %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <% if (request.status === 'APPROVED') { %>
+                    <a href="https://discord.gg/<%= guild.vanityURLCode || guild.id %>" 
+                       class="btn-primary flex-1"
+                       target="_blank">
+                        <i class="bi bi-discord mr-2"></i>
+                        Join Server
+                    </a>
+                <% } %>
+                <a href="/" class="btn-secondary flex-1">
+                    <i class="bi bi-house mr-2"></i>
+                    Return Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-base {
+    @apply bg-white dark:bg-discord-dark-300 shadow-lg rounded-xl;
+}
+</style> 

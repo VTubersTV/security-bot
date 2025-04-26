@@ -1,0 +1,228 @@
+<%- include('layout') %>
+
+<div class="max-w-4xl mx-auto">
+    <div class="card-base overflow-hidden animate-slide-up">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-discord-primary to-discord-primary-dark px-6 py-4">
+            <h1 class="text-2xl font-bold text-white flex items-center">
+                <i class="bi bi-shield-check mr-2"></i>
+                Terms of Service
+            </h1>
+            <p class="text-white/80 mt-2 flex items-center">
+                <i class="bi bi-calendar3 mr-2"></i>
+                Last updated: <%= updated %>
+            </p>
+        </div>
+
+        <div class="p-6 space-y-8">
+            <!-- Introduction -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">1.</span>
+                    Introduction
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>
+                        Welcome to VTubers.TV's Discord Verification System. By using our verification service, you agree to these Terms of Service. Our service is designed to maintain the security and integrity of the VTubers.TV Discord community through advanced verification methods and robust security measures.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Service Description -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">2.</span>
+                    Service Description
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>
+                        The VTubers.TV Verification System is a comprehensive security service that:
+                    </p>
+                    <br>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" data-items="true">
+                        <li class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-person-check text-discord-primary mr-2"></i>
+                            Verifies Discord user identities
+                        </li>
+                        <li class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-robot text-discord-primary mr-2"></i>
+                            Prevents automated bot accounts
+                        </li>
+                        <li class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-key text-discord-primary mr-2"></i>
+                            Manages community access through Discord's OAuth2
+                        </li>
+                        <li class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-shield-lock text-discord-primary mr-2"></i>
+                            Implements advanced security measures
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- User Obligations -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">3.</span>
+                    User Obligations
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>By using our service, you agree to:</p>
+                    <br>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" data-items="true">
+                        <div class="flex items-start bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-check-circle text-discord-success mt-1 mr-2"></i>
+                            <span>Provide accurate information during verification</span>
+                        </div>
+                        <div class="flex items-start bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-x-circle text-discord-danger mt-1 mr-2"></i>
+                            <span>No VPNs, proxies, or Tor networks</span>
+                        </div>
+                        <div class="flex items-start bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-x-circle text-discord-danger mt-1 mr-2"></i>
+                            <span>No security measure bypassing attempts</span>
+                        </div>
+                        <div class="flex items-start bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-exclamation-circle text-discord-warning mt-1 mr-2"></i>
+                            <span>Respect verification attempt limits</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Measures -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">4.</span>
+                    Security Measures
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p>Our comprehensive security system includes:</p>
+                    <br>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" data-items="true">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-shield text-discord-primary mr-2"></i>
+                            IP-based threat detection
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-speedometer2 text-discord-primary mr-2"></i>
+                            Intelligent rate limiting
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-eye-slash text-discord-primary mr-2"></i>
+                            VPN & proxy detection
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-lock text-discord-primary mr-2"></i>
+                            Session security
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Termination -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">5.</span>
+                    Termination
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <p class="text-discord-danger font-medium">
+                        Access may be terminated or suspended for:
+                    </p>
+                    <br>
+                    <div class="space-y-2 mt-4" data-items="true">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-exclamation-triangle text-discord-danger mr-2"></i>
+                            Terms violation or suspicious activity
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-exclamation-triangle text-discord-danger mr-2"></i>
+                            Verification attempt abuse
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-exclamation-triangle text-discord-danger mr-2"></i>
+                            Security-threatening behavior
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Disclaimer -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">6.</span>
+                    Disclaimer
+                </h2>
+                <br>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <div class="flex items-center mb-4">
+                        <i class="bi bi-info-circle text-discord-info mr-2"></i>
+                        <p class="font-medium">Service provided "as is" without warranties</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-clock text-discord-warning mr-2"></i>
+                            Service interruptions
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-bug text-discord-warning mr-2"></i>
+                            Technical issues
+                        </div>
+                        <div class="flex items-center bg-white dark:bg-discord-dark-200 p-3 rounded-lg">
+                            <i class="bi bi-gear text-discord-warning mr-2"></i>
+                            API changes
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Changes to Terms -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">7.</span>
+                    Changes to Terms
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="bi bi-pencil text-discord-primary mr-2"></i>
+                        <p>
+                            We reserve the right to modify these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section class="prose dark:prose-invert max-w-none">
+                <h2 class="flex items-center">
+                    <span class="text-discord-primary mr-2">8.</span>
+                    Contact
+                </h2>
+                <div class="bg-gray-50 dark:bg-discord-dark-100 p-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="bi bi-chat-dots text-discord-primary mr-2"></i>
+                        <p>
+                            For questions about these terms, please contact us through the VTubers.TV Discord server.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<style>
+    .prose h2 {
+        @apply text-2xl font-bold mb-4 text-gray-900 dark:text-white;
+    }
+    .prose p {
+        @apply text-gray-700 dark:text-gray-300 leading-relaxed;
+    }
+    .prose ul {
+        @apply list-none p-0 m-0;
+    }
+    .card-base {
+        @apply bg-white dark:bg-discord-dark-300 shadow-lg rounded-xl;
+    }
+</style>

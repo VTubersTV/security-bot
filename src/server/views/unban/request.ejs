@@ -1,0 +1,195 @@
+<%- include('../layout') %>
+
+<div class="max-w-3xl mx-auto">
+    <div class="card-base overflow-hidden animate-slide-up">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-discord-primary to-discord-primary-dark px-6 py-4">
+            <h1 class="text-2xl font-bold text-white flex items-center">
+                <i class="bi bi-shield-lock mr-2"></i>
+                Unban Request Form
+            </h1>
+            <p class="text-white/80 mt-2">
+                Submit a request to be unbanned from <%= guild.name %>
+            </p>
+        </div>
+
+        <div class="p-6 space-y-8">
+            <!-- Guidelines -->
+            <div class="bg-blue-50 dark:bg-discord-dark-200 rounded-lg p-4 border border-blue-100 dark:border-discord-dark-300">
+                <div class="flex items-center mb-2">
+                    <i class="bi bi-info-circle text-discord-info text-xl mr-2"></i>
+                    <h5 class="text-lg font-semibold text-discord-info">Guidelines</h5>
+                </div>
+                <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 space-y-2">
+                    <li>Be honest about the reason for your ban</li>
+                    <li>Explain what you've learned from the experience</li>
+                    <li>Provide any relevant evidence to support your appeal</li>
+                    <li>Be respectful and clear in your appeal message</li>
+                </ul>
+            </div>
+
+            <!-- Request Form -->
+            <form class="space-y-6">
+                <!-- User ID -->
+                <div class="space-y-2">
+                    <label for="userId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Discord User ID
+                    </label>
+                    <% if (!userId) { %>
+                        <input type="text" 
+                           id="userId" 
+                           name="userId" 
+                           required
+                           pattern="^\d{17,19}$"
+                           class="input-base"
+                           placeholder="Your Discord User ID (17-19 digits)">
+                    <% } else { %>
+                        <input type="text" 
+                           id="userId" 
+                           name="userId" 
+                           required
+                           value="<%= userId %>"
+                           disabled
+                           class="input-base"
+                           placeholder="Your Discord User ID (17-19 digits)">
+                    <% } %>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <i class="bi bi-question-circle mr-1"></i>
+                        Don't know your User ID? 
+                        <a href="https://support.discord.com/hc/en-us/articles/206346498" 
+                           target="_blank"
+                           class="text-discord-primary hover:underline">
+                            Learn how to find it
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Ban Reason -->
+                <div class="space-y-2">
+                    <label for="banReason" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Original Ban Reason (if known)
+                    </label>
+                    <input type="text" 
+                           id="banReason" 
+                           name="banReason" 
+                           required
+                           class="input-base"
+                           placeholder="Why were you banned?">
+                </div>
+
+                <!-- Appeal Message -->
+                <div class="space-y-2">
+                    <label for="appealMessage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Appeal Message
+                    </label>
+                    <textarea id="appealMessage" 
+                            name="appealMessage" 
+                            required
+                            rows="5"
+                            maxlength="2000"
+                            class="input-base"
+                            placeholder="Explain why you should be unbanned..."></textarea>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-end">
+                        <span id="charCount">0</span>/2000 characters
+                    </p>
+                </div>
+
+                <!-- Evidence -->
+                <div class="space-y-2">
+                    <label for="evidence" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Additional Evidence (optional)
+                    </label>
+                    <textarea id="evidence" 
+                            name="evidence" 
+                            rows="3"
+                            maxlength="1000"
+                            class="input-base"
+                            placeholder="Provide any additional context or evidence..."></textarea>
+                </div>
+
+                <!-- Terms -->
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               id="truthful" 
+                               name="truthful"
+                               required
+                               class="w-4 h-4 rounded border-gray-300 text-discord-primary focus:ring-discord-primary">
+                        <label for="truthful" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                            I confirm that all information provided is truthful and accurate
+                        </label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               id="rules" 
+                               name="rules"
+                               required
+                               class="w-4 h-4 rounded border-gray-300 text-discord-primary focus:ring-discord-primary">
+                        <label for="rules" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                            I agree to follow all server rules if unbanned
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="btn-primary w-full"
+                        id="submitBtn"
+                        disabled>
+                    <i class="bi bi-send mr-2"></i>
+                    Submit Unban Request
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Form Validation Script -->
+<script src="/js/unban-request.js"></script>
+
+<style>
+.card-base {
+    @apply bg-white dark:bg-discord-dark-300 shadow-lg rounded-xl;
+}
+
+.input-base {
+    @apply block w-full rounded-md border-gray-300 dark:border-gray-600 
+           shadow-sm focus:border-discord-primary focus:ring-discord-primary 
+           dark:bg-discord-dark-200 dark:text-white sm:text-sm;
+}
+
+.btn-primary {
+    @apply inline-flex justify-center items-center px-4 py-2 border border-transparent 
+           text-sm font-medium rounded-md shadow-sm text-white bg-discord-primary 
+           hover:bg-discord-primary-dark focus:outline-none focus:ring-2 
+           focus:ring-offset-2 focus:ring-discord-primary transition-colors 
+           disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-fade-out {
+    animation: fade-out 0.3s ease-out forwards;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style> 
