@@ -13,7 +13,6 @@ router.use(cookieParser())
  */
 const DISCORD_API_URL = 'https://discord.com/api/v10'
 const OAUTH_SCOPES = ['identify', 'guilds.join']
-const STATE_EXPIRY = 5 * 60 * 1000 // 5 minutes
 
 /**
  * Interface for Discord user data
@@ -38,46 +37,38 @@ interface OAuthTokens {
 }
 
 /**
- * Interface for OAuth state data
+ * Generate PKCE challenge pair
+ * @returns Object containing code verifier and challenge
  */
-interface OAuthState {
-	value: string
-	expires: number
-}
-
-/**
- * Generate a cryptographically secure state
- * @returns Secure random state string
- */
-function generateSecureState(): string {
-	return crypto.randomBytes(32).toString('hex')
+function generatePKCE() {
+	const verifier = crypto.randomBytes(32).toString('base64url')
+	const challenge = crypto
+		.createHash('sha256')
+		.update(verifier)
+		.digest('base64url')
+	
+	return { verifier, challenge }
 }
 
 /**
  * Start Discord OAuth2 flow
  */
 router.get('/login', async (req: Request, res: Response) => {
-	const state = generateSecureState()
+	const { verifier, challenge } = generatePKCE()
 	
-	// Store state in session and wait for it to save
-	req.session.oauthState = state
-	await new Promise<void>((resolve) => {
-		req.session.save((err) => {
-			if (err) {
-				Logger.error('Failed to save session', err)
-			}
-			resolve()
-		})
-	})
+	// Store verifier in session
+	req.session.codeVerifier = verifier
+	await req.session.save()
 	
-	Logger.log('debug', `Generated OAuth state: ${state}, Session ID: ${req.sessionID}`, 'Auth')
+	Logger.log('debug', `Starting OAuth flow with PKCE, Session ID: ${req.sessionID}`, 'Auth')
 
 	const params = new URLSearchParams({
 		client_id: env.DISCORD_CLIENT_ID,
 		redirect_uri: `${env.WEB_URL}/auth/callback`,
 		response_type: 'code',
 		scope: OAUTH_SCOPES.join(' '),
-		state: state,
+		code_challenge: challenge,
+		code_challenge_method: 'S256'
 	})
 
 	res.redirect(`${DISCORD_API_URL}/oauth2/authorize?${params}`)
@@ -87,40 +78,29 @@ router.get('/login', async (req: Request, res: Response) => {
  * Handle Discord OAuth2 callback
  */
 router.get('/callback', async (req: Request, res: Response) => {
-	const { code, state } = req.query
-	const storedState = req.session.oauthState
+	const { code } = req.query
+	const verifier = req.session.codeVerifier
 
-	Logger.log('debug', `Callback received - State: ${state}, Stored State: ${storedState}, Session ID: ${req.sessionID}`, 'Auth')
+	Logger.log('debug', `Callback received - Code: ${!!code}, Has Verifier: ${!!verifier}, Session ID: ${req.sessionID}`, 'Auth')
 
 	// If there's no code, redirect to login
 	if (!code) {
 		Logger.log('warn', 'Missing OAuth code parameter', 'Auth')
-		delete req.session.oauthState
+		delete req.session.codeVerifier
 		await req.session.save()
 		return res.redirect('/')
 	}
 
-	// Comprehensive state verification
-	if (!state || !storedState) {
-		Logger.log('warn', `State verification failed - Received: ${state}, Stored: ${storedState}, Session ID: ${req.sessionID}`, 'Auth')
-		delete req.session.oauthState
+	// If there's no verifier, start over
+	if (!verifier) {
+		Logger.log('warn', 'Missing code verifier', 'Auth')
+		delete req.session.codeVerifier
 		await req.session.save()
 		return res.redirect('/')
 	}
-
-	if (state !== storedState) {
-		Logger.log('warn', `State mismatch - Received: ${state}, Expected: ${storedState}, Session ID: ${req.sessionID}`, 'Auth')
-		delete req.session.oauthState
-		await req.session.save()
-		return res.redirect('/')
-	}
-
-	// Clear used state
-	delete req.session.oauthState
-	await req.session.save() // Ensure session is saved
 
 	try {
-		// Exchange code for access token
+		// Exchange code for access token using PKCE
 		const tokenResponse = await axios.post<OAuthTokens>(
 			`${DISCORD_API_URL}/oauth2/token`,
 			new URLSearchParams({
@@ -129,6 +109,7 @@ router.get('/callback', async (req: Request, res: Response) => {
 				grant_type: 'authorization_code',
 				code: code as string,
 				redirect_uri: `${env.WEB_URL}/auth/callback`,
+				code_verifier: verifier
 			}),
 			{
 				headers: {
@@ -137,6 +118,9 @@ router.get('/callback', async (req: Request, res: Response) => {
 			},
 		)
 
+		// Clean up verifier
+		delete req.session.codeVerifier
+		
 		// Get user data
 		const userResponse = await axios.get<DiscordUser>(
 			`${DISCORD_API_URL}/users/@me`,
@@ -150,7 +134,7 @@ router.get('/callback', async (req: Request, res: Response) => {
 		// Store user data and tokens in session
 		req.session.tokens = tokenResponse.data
 		req.session.user = userResponse.data
-		await req.session.save() // Ensure session is saved
+		await req.session.save()
 
 		Logger.log('info', `User authenticated: ${userResponse.data.username}`, 'Auth')
 
@@ -158,8 +142,8 @@ router.get('/callback', async (req: Request, res: Response) => {
 		res.redirect('/verify')
 	} catch (error: any) {
 		Logger.error('OAuth callback failed', error)
-		delete req.session.oauthState
-		await req.session.save() // Ensure session is saved
+		delete req.session.codeVerifier
+		await req.session.save()
 		res.redirect('/')
 	}
 })
@@ -183,7 +167,7 @@ export function setupAuthRoutes(app: Application): void {
 // Extend Express session with our custom properties
 declare module 'express-session' {
 	interface SessionData {
-		oauthState: string
+		codeVerifier: string
 		tokens: OAuthTokens
 		user: DiscordUser
 	}
