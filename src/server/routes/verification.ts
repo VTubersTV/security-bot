@@ -10,7 +10,7 @@ const router = Router()
  * Middleware to ensure user is authenticated
  */
 function requireAuth(req: Request, res: Response, next: Function) {
-	if (!req.session.user || !req.session.tokens) {
+	if (!req.cookies.discord_user || !req.cookies.discord_tokens) {
 		return res.redirect('/auth/login')
 	}
 	next()
@@ -64,7 +64,7 @@ export function setupVerificationRoutes(
 ): void {
 	// Verification page
 	router.get('/', requireAuth, (req: Request, res: Response) => {
-		const { user } = req.session
+		const user = req.cookies.discord_user
 
 		if (user && hasExceededAttempts(user.id)) {
 			return res.status(429).render('error', {
@@ -79,7 +79,7 @@ export function setupVerificationRoutes(
 	})
 
 	router.get('/success', requireAuth, (req: Request, res: Response) => {
-		const { user } = req.session
+		const user = req.cookies.discord_user
 		res.render('success', {
 			user,
 			guild: client.guilds.cache.get(env.DISCORD_GUILD_ID),
@@ -88,7 +88,8 @@ export function setupVerificationRoutes(
 
 	// Handle verification submission
 	router.post('/', requireAuth, async (req: Request, res: Response) => {
-		const { user, tokens } = req.session
+		const user = req.cookies.discord_user
+		const tokens = req.cookies.discord_tokens
 
 		if (!user || !tokens) {
 			return res.redirect('/auth/login')

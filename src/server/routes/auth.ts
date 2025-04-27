@@ -2,14 +2,17 @@ import { Router, Request, Response, Application } from 'express'
 import { env } from '../../utils/env_parser'
 import axios from 'axios'
 import Logger from '../../classes/logger'
+import cookieParser from 'cookie-parser'
 
 const router = Router()
+router.use(cookieParser())
 
 /**
  * Discord OAuth2 URLs and configuration
  */
 const DISCORD_API_URL = 'https://discord.com/api/v10'
 const OAUTH_SCOPES = ['identify', 'guilds.join']
+const COOKIE_MAX_AGE = 24 * 60 * 60 * 1000 // 24 hours
 
 /**
  * Interface for Discord user data
@@ -86,9 +89,20 @@ router.get('/callback', async (req: Request, res: Response) => {
 			},
 		)
 
-		// Store user data and tokens in session
-		req.session.tokens = tokenResponse.data
-		req.session.user = userResponse.data
+		// Store tokens and user data in cookies
+		res.cookie('discord_tokens', tokenResponse.data, {
+			httpOnly: true,
+			secure: env.NODE_ENV === 'production',
+			maxAge: COOKIE_MAX_AGE,
+			sameSite: 'lax'
+		})
+
+		res.cookie('discord_user', userResponse.data, {
+			httpOnly: true,
+			secure: env.NODE_ENV === 'production',
+			maxAge: COOKIE_MAX_AGE,
+			sameSite: 'lax'
+		})
 
 		Logger.log('info', `User authenticated: ${userResponse.data.username}`, 'Auth')
 
@@ -96,6 +110,8 @@ router.get('/callback', async (req: Request, res: Response) => {
 		res.redirect('/verify')
 	} catch (error: any) {
 		Logger.error('OAuth callback failed', error)
+		res.clearCookie('discord_tokens')
+		res.clearCookie('discord_user')
 		res.redirect('/')
 	}
 })
@@ -104,9 +120,9 @@ router.get('/callback', async (req: Request, res: Response) => {
  * Logout route
  */
 router.get('/logout', (req: Request, res: Response) => {
-	req.session.destroy(() => {
-		res.redirect('/')
-	})
+	res.clearCookie('discord_tokens')
+	res.clearCookie('discord_user')
+	res.redirect('/')
 })
 
 /**
@@ -116,10 +132,14 @@ export function setupAuthRoutes(app: Application): void {
 	app.use('/auth', router)
 }
 
-// Extend Express session with our custom properties
-declare module 'express-session' {
-	interface SessionData {
-		tokens: OAuthTokens
-		user: DiscordUser
+// Add cookie types to Express Request
+declare global {
+	namespace Express {
+		interface Request {
+			cookies: {
+				discord_tokens?: OAuthTokens
+				discord_user?: DiscordUser
+			}
+		}
 	}
 }

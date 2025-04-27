@@ -4,8 +4,10 @@ import { env } from '../../utils/env_parser'
 import Logger from '../../classes/logger'
 import { Client } from 'discord.js'
 import { Bot } from '../../types/bot'
+import cookieParser from 'cookie-parser'
 
 const router = Router()
+router.use(cookieParser())
 
 /**
  * Setup moderation routes for viewing infractions and statistics
@@ -56,7 +58,7 @@ export function setupModerationRoutes(
 			}
 
 			res.render('moderation/infractions', {
-				user: req.session.user || null,
+				user: req.cookies.discord_user || null,
 				guild,
 				infractions,
 				users,

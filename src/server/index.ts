@@ -1,7 +1,6 @@
 import express from 'express'
 import { join } from 'path'
-import session from 'express-session'
-import MongoStore from 'connect-mongo'
+import cookieParser from 'cookie-parser'
 import { env } from '../utils/env_parser'
 import { setupAuthRoutes } from './routes/auth'
 import { setupVerificationRoutes } from './routes/verification'
@@ -39,24 +38,7 @@ export class VerificationServer {
 		// Body parser middleware
 		this.app.use(express.json())
 		this.app.use(express.urlencoded({ extended: true }))
-
-		// Session configuration with MongoDB store
-		this.app.use(
-			session({
-				secret: env.SESSION_SECRET,
-				resave: true,
-				saveUninitialized: true,
-				store: MongoStore.create({
-					mongoUrl: env.MONGODB_URI,
-					ttl: 24 * 60 * 60, // 24 hours
-					autoRemove: 'native'
-				}),
-				cookie: {
-					secure: env.NODE_ENV === 'production',
-					maxAge: 24 * 60 * 60 * 1000 // 24 hours
-				}
-			})
-		)
+		this.app.use(cookieParser(env.SESSION_SECRET))
 
 		// Setup security middleware
 		setupMiddleware(this.app)
@@ -70,7 +52,7 @@ export class VerificationServer {
 		// Root route
 		this.app.get('/', (req, res) => {
 			res.render('index', {
-				user: req.session.user || null,
+				user: req.cookies.discord_user || null,
 				guild: this.client.guilds.cache.get(env.DISCORD_GUILD_ID) || null,
 			})
 		})
@@ -78,7 +60,7 @@ export class VerificationServer {
 		// Terms of Service route
 		this.app.get('/terms', (req, res) => {
 			res.render('terms', {
-				user: req.session.user || null,
+				user: req.cookies.discord_user || null,
 				guild: this.client.guilds.cache.get(env.DISCORD_GUILD_ID) || null,
 				updated: '4/26/2025',
 			})
@@ -87,7 +69,7 @@ export class VerificationServer {
 		// Privacy Policy route
 		this.app.get('/privacy', (req, res) => {
 			res.render('privacy', {
-				user: req.session.user || null,
+				user: req.cookies.discord_user || null,
 				guild: this.client.guilds.cache.get(env.DISCORD_GUILD_ID) || null,
 				updated: '4/26/2025',
 			})

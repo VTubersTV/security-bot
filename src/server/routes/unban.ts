@@ -5,8 +5,10 @@ import Logger from '../../classes/logger'
 import { Client } from 'discord.js'
 import { Bot } from '../../types/bot'
 import { fromBase64 } from '../../utils/base64'
+import cookieParser from 'cookie-parser'
 
 const router = Router()
+router.use(cookieParser())
 
 /**
  * Setup unban request routes
@@ -24,7 +26,7 @@ export function setupUnbanRoutes(app: Application, client: Bot<Client>): void {
 			}
 
 			res.render('unban/request', {
-				user: req.session.user || null,
+				user: req.cookies.discord_user || null,
 				guild,
 				userId,
 			})
