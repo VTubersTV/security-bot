@@ -2,14 +2,18 @@ import { Router, Request, Response, Application } from 'express'
 import { env } from '../../utils/env_parser'
 import axios from 'axios'
 import Logger from '../../classes/logger'
+import crypto from 'crypto'
+import cookieParser from 'cookie-parser'
 
 const router = Router()
+router.use(cookieParser())
 
 /**
- * Discord OAuth2 URLs
+ * Discord OAuth2 URLs and configuration
  */
 const DISCORD_API_URL = 'https://discord.com/api/v10'
 const OAUTH_SCOPES = ['identify', 'guilds.join']
+const STATE_EXPIRY = 5 * 60 * 1000 // 5 minutes
 
 /**
  * Interface for Discord user data
@@ -34,18 +38,42 @@ interface OAuthTokens {
 }
 
 /**
+ * Interface for OAuth state data
+ */
+interface OAuthState {
+	value: string
+	expires: number
+}
+
+/**
+ * Generate a cryptographically secure state
+ * @returns Secure random state string
+ */
+function generateSecureState(): OAuthState {
+	return {
+		value: crypto.randomBytes(32).toString('hex'),
+		expires: Date.now() + STATE_EXPIRY
+	}
+}
+
+/**
  * Start Discord OAuth2 flow
  */
 router.get('/login', (req: Request, res: Response) => {
-	const state = Math.random().toString(36).substring(7)
-	req.session.state = state
+	const state = generateSecureState()
+	// Create cookie with state
+	res.cookie('oauthState', state.value, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: STATE_EXPIRY,
+	})
 
 	const params = new URLSearchParams({
 		client_id: env.DISCORD_CLIENT_ID,
 		redirect_uri: `${env.WEB_URL}/auth/callback`,
 		response_type: 'code',
 		scope: OAUTH_SCOPES.join(' '),
-		state: state,
+		state: state.value,
 	})
 
 	res.redirect(`${DISCORD_API_URL}/oauth2/authorize?${params}`)
@@ -56,14 +84,23 @@ router.get('/login', (req: Request, res: Response) => {
  */
 router.get('/callback', async (req: Request, res: Response) => {
 	const { code, state } = req.query
+	const storedState = req.cookies?.oauthState
 
-	// Verify state to prevent CSRF
-	if (!state || state !== req.session.state) {
-		Logger.log('warn', 'Invalid OAuth state parameter', 'Auth')
-		return res.status(403).render('error', {
-			error: 'Invalid OAuth state. Please try again.',
-		})
+	// Comprehensive state verification
+	if (!state || !storedState) {
+		Logger.log('warn', 'Missing OAuth state parameter', 'Auth')
+		res.clearCookie('oauthState')
+		return res.redirect('/auth/login')
 	}
+
+	if (state !== storedState) {
+		Logger.log('warn', 'Invalid OAuth state parameter', 'Auth')
+		res.clearCookie('oauthState')
+		return res.redirect('/auth/login')
+	}
+
+	// Clear used state
+	res.clearCookie('oauthState')
 
 	try {
 		// Exchange code for access token
@@ -126,7 +163,7 @@ export function setupAuthRoutes(app: Application): void {
 // Extend Express session with our custom properties
 declare module 'express-session' {
 	interface SessionData {
-		state: string
+		oauthState: OAuthState
 		tokens: OAuthTokens
 		user: DiscordUser
 	}
