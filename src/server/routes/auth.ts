@@ -49,31 +49,31 @@ interface OAuthState {
  * Generate a cryptographically secure state
  * @returns Secure random state string
  */
-function generateSecureState(): OAuthState {
-	return {
-		value: crypto.randomBytes(32).toString('hex'),
-		expires: Date.now() + STATE_EXPIRY
-	}
+function generateSecureState(): string {
+	return crypto.randomBytes(32).toString('hex')
 }
 
 /**
  * Start Discord OAuth2 flow
  */
 router.get('/login', (req: Request, res: Response) => {
-	const state = generateSecureState()
-	// Create cookie with state
-	res.cookie('oauthState', state.value, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: STATE_EXPIRY,
-	})
+	// Only generate new state if one doesn't exist
+	if (!req.cookies?.oauthState) {
+		const state = generateSecureState()
+		res.cookie('oauthState', state, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			maxAge: STATE_EXPIRY,
+			sameSite: 'lax'
+		})
+	}
 
 	const params = new URLSearchParams({
 		client_id: env.DISCORD_CLIENT_ID,
 		redirect_uri: `${env.WEB_URL}/auth/callback`,
 		response_type: 'code',
 		scope: OAUTH_SCOPES.join(' '),
-		state: state.value,
+		state: req.cookies?.oauthState || '',
 	})
 
 	res.redirect(`${DISCORD_API_URL}/oauth2/authorize?${params}`)
@@ -86,17 +86,18 @@ router.get('/callback', async (req: Request, res: Response) => {
 	const { code, state } = req.query
 	const storedState = req.cookies?.oauthState
 
-	// Comprehensive state verification
-	if (!state || !storedState) {
-		Logger.log('warn', 'Missing OAuth state parameter', 'Auth')
+	// If there's no code, redirect to login
+	if (!code) {
+		Logger.log('warn', 'Missing OAuth code parameter', 'Auth')
 		res.clearCookie('oauthState')
-		return res.redirect('/auth/login')
+		return res.redirect('/')
 	}
 
-	if (state !== storedState) {
+	// Comprehensive state verification
+	if (!state || !storedState || state !== storedState) {
 		Logger.log('warn', 'Invalid OAuth state parameter', 'Auth')
 		res.clearCookie('oauthState')
-		return res.redirect('/auth/login')
+		return res.redirect('/')
 	}
 
 	// Clear used state
@@ -138,9 +139,8 @@ router.get('/callback', async (req: Request, res: Response) => {
 		res.redirect('/verify')
 	} catch (error: any) {
 		Logger.error('OAuth callback failed', error)
-		res.status(500).render('error', {
-			error: 'Authentication failed. Please try again.',
-		})
+		res.clearCookie('oauthState')
+		res.redirect('/')
 	}
 })
 
