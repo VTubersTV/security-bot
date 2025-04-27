@@ -56,13 +56,21 @@ function generateSecureState(): string {
 /**
  * Start Discord OAuth2 flow
  */
-router.get('/login', (req: Request, res: Response) => {
+router.get('/login', async (req: Request, res: Response) => {
 	const state = generateSecureState()
 	
-	// Store state in session instead of cookie
+	// Store state in session and wait for it to save
 	req.session.oauthState = state
+	await new Promise<void>((resolve) => {
+		req.session.save((err) => {
+			if (err) {
+				Logger.error('Failed to save session', err)
+			}
+			resolve()
+		})
+	})
 	
-	Logger.log('debug', `Generated OAuth state: ${state}`, 'Auth')
+	Logger.log('debug', `Generated OAuth state: ${state}, Session ID: ${req.sessionID}`, 'Auth')
 
 	const params = new URLSearchParams({
 		client_id: env.DISCORD_CLIENT_ID,
@@ -82,25 +90,28 @@ router.get('/callback', async (req: Request, res: Response) => {
 	const { code, state } = req.query
 	const storedState = req.session.oauthState
 
-	Logger.log('debug', `Callback received - State: ${state}, Stored State: ${storedState}`, 'Auth')
+	Logger.log('debug', `Callback received - State: ${state}, Stored State: ${storedState}, Session ID: ${req.sessionID}`, 'Auth')
 
 	// If there's no code, redirect to login
 	if (!code) {
 		Logger.log('warn', 'Missing OAuth code parameter', 'Auth')
 		delete req.session.oauthState
+		await req.session.save()
 		return res.redirect('/')
 	}
 
 	// Comprehensive state verification
 	if (!state || !storedState) {
-		Logger.log('warn', `State verification failed - Received: ${state}, Stored: ${storedState}`, 'Auth')
+		Logger.log('warn', `State verification failed - Received: ${state}, Stored: ${storedState}, Session ID: ${req.sessionID}`, 'Auth')
 		delete req.session.oauthState
+		await req.session.save()
 		return res.redirect('/')
 	}
 
 	if (state !== storedState) {
-		Logger.log('warn', `State mismatch - Received: ${state}, Expected: ${storedState}`, 'Auth')
+		Logger.log('warn', `State mismatch - Received: ${state}, Expected: ${storedState}, Session ID: ${req.sessionID}`, 'Auth')
 		delete req.session.oauthState
+		await req.session.save()
 		return res.redirect('/')
 	}
 
