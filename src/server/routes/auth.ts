@@ -57,23 +57,19 @@ function generateSecureState(): string {
  * Start Discord OAuth2 flow
  */
 router.get('/login', (req: Request, res: Response) => {
-	// Only generate new state if one doesn't exist
-	if (!req.cookies?.oauthState) {
-		const state = generateSecureState()
-		res.cookie('oauthState', state, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			maxAge: STATE_EXPIRY,
-			sameSite: 'lax'
-		})
-	}
+	const state = generateSecureState()
+	
+	// Store state in session instead of cookie
+	req.session.oauthState = state
+	
+	Logger.log('debug', `Generated OAuth state: ${state}`, 'Auth')
 
 	const params = new URLSearchParams({
 		client_id: env.DISCORD_CLIENT_ID,
 		redirect_uri: `${env.WEB_URL}/auth/callback`,
 		response_type: 'code',
 		scope: OAUTH_SCOPES.join(' '),
-		state: req.cookies?.oauthState || '',
+		state: state,
 	})
 
 	res.redirect(`${DISCORD_API_URL}/oauth2/authorize?${params}`)
@@ -84,24 +80,33 @@ router.get('/login', (req: Request, res: Response) => {
  */
 router.get('/callback', async (req: Request, res: Response) => {
 	const { code, state } = req.query
-	const storedState = req.cookies?.oauthState
+	const storedState = req.session.oauthState
+
+	Logger.log('debug', `Callback received - State: ${state}, Stored State: ${storedState}`, 'Auth')
 
 	// If there's no code, redirect to login
 	if (!code) {
 		Logger.log('warn', 'Missing OAuth code parameter', 'Auth')
-		res.clearCookie('oauthState')
+		delete req.session.oauthState
 		return res.redirect('/')
 	}
 
 	// Comprehensive state verification
-	if (!state || !storedState || state !== storedState) {
-		Logger.log('warn', 'Invalid OAuth state parameter', 'Auth')
-		res.clearCookie('oauthState')
+	if (!state || !storedState) {
+		Logger.log('warn', `State verification failed - Received: ${state}, Stored: ${storedState}`, 'Auth')
+		delete req.session.oauthState
+		return res.redirect('/')
+	}
+
+	if (state !== storedState) {
+		Logger.log('warn', `State mismatch - Received: ${state}, Expected: ${storedState}`, 'Auth')
+		delete req.session.oauthState
 		return res.redirect('/')
 	}
 
 	// Clear used state
-	res.clearCookie('oauthState')
+	delete req.session.oauthState
+	await req.session.save() // Ensure session is saved
 
 	try {
 		// Exchange code for access token
@@ -134,12 +139,16 @@ router.get('/callback', async (req: Request, res: Response) => {
 		// Store user data and tokens in session
 		req.session.tokens = tokenResponse.data
 		req.session.user = userResponse.data
+		await req.session.save() // Ensure session is saved
+
+		Logger.log('info', `User authenticated: ${userResponse.data.username}`, 'Auth')
 
 		// Redirect to verification page
 		res.redirect('/verify')
 	} catch (error: any) {
 		Logger.error('OAuth callback failed', error)
-		res.clearCookie('oauthState')
+		delete req.session.oauthState
+		await req.session.save() // Ensure session is saved
 		res.redirect('/')
 	}
 })
@@ -163,7 +172,7 @@ export function setupAuthRoutes(app: Application): void {
 // Extend Express session with our custom properties
 declare module 'express-session' {
 	interface SessionData {
-		oauthState: OAuthState
+		oauthState: string
 		tokens: OAuthTokens
 		user: DiscordUser
 	}

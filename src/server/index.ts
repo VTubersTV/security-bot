@@ -1,6 +1,7 @@
 import express from 'express'
 import { join } from 'path'
 import session from 'express-session'
+import MongoStore from 'connect-mongo'
 import { env } from '../utils/env_parser'
 import { setupAuthRoutes } from './routes/auth'
 import { setupVerificationRoutes } from './routes/verification'
@@ -35,19 +36,31 @@ export class VerificationServer {
 		this.app.set('views', join(__dirname, 'views'))
 		this.app.use(express.static(join(__dirname, 'public')))
 
-		// Body parser and session middleware
+		// Body parser middleware
 		this.app.use(express.json())
 		this.app.use(express.urlencoded({ extended: true }))
+
+		// Session configuration with MongoDB store
 		this.app.use(
 			session({
 				secret: env.SESSION_SECRET,
 				resave: false,
 				saveUninitialized: false,
+				store: MongoStore.create({
+					mongoUrl: env.MONGODB_URI,
+					ttl: 24 * 60 * 60, // 24 hours in seconds
+					crypto: {
+						secret: env.SESSION_SECRET
+					},
+					autoRemove: 'interval',
+					autoRemoveInterval: 60, // Check expired sessions every minute
+				}),
 				cookie: {
 					secure: env.NODE_ENV === 'production',
-					maxAge: 24 * 60 * 60 * 1000, // 24 hours
+					maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+					sameSite: 'lax'
 				},
-			}),
+			})
 		)
 
 		// Setup security middleware
@@ -98,7 +111,7 @@ export class VerificationServer {
 					error:
 						env.NODE_ENV === 'production' ? 'An error occurred' : err.message,
 				})
-			},
+			}
 		)
 	}
 
