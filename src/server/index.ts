@@ -44,26 +44,17 @@ export class VerificationServer {
 		this.app.use(
 			session({
 				secret: env.SESSION_SECRET,
-				resave: false,
+				resave: true,
 				saveUninitialized: true,
 				store: MongoStore.create({
 					mongoUrl: env.MONGODB_URI,
-					ttl: 24 * 60 * 60, // 24 hours in seconds
-					crypto: {
-						secret: env.SESSION_SECRET
-					},
-					autoRemove: 'interval',
-					autoRemoveInterval: 60, // Check expired sessions every minute
-					touchAfter: 24 * 3600, // Only update session once per 24 hours unless data changes
+					ttl: 24 * 60 * 60, // 24 hours
+					autoRemove: 'native'
 				}),
 				cookie: {
 					secure: env.NODE_ENV === 'production',
-					maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-					sameSite: 'lax',
-					path: '/',
-					httpOnly: true
-				},
-				name: 'sid', // Custom session ID cookie name
+					maxAge: 24 * 60 * 60 * 1000 // 24 hours
+				}
 			})
 		)
 
