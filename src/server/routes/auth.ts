@@ -56,11 +56,22 @@ function generatePKCE() {
 router.get('/login', async (req: Request, res: Response) => {
 	const { verifier, challenge } = generatePKCE()
 	
-	// Store verifier in session
+	// Store verifier in session and explicitly save
 	req.session.codeVerifier = verifier
-	await req.session.save()
 	
-	Logger.log('debug', `Starting OAuth flow with PKCE, Session ID: ${req.sessionID}`, 'Auth')
+	// Ensure session is saved before redirect
+	await new Promise<void>((resolve, reject) => {
+		req.session.save((err) => {
+			if (err) {
+				Logger.error('Failed to save session', err)
+				reject(err)
+				return
+			}
+			resolve()
+		})
+	})
+
+	Logger.log('debug', `Starting OAuth flow with PKCE, Session ID: ${req.sessionID}, Verifier Length: ${verifier.length}`, 'Auth')
 
 	const params = new URLSearchParams({
 		client_id: env.DISCORD_CLIENT_ID,
@@ -71,6 +82,7 @@ router.get('/login', async (req: Request, res: Response) => {
 		code_challenge_method: 'S256'
 	})
 
+	// Send response after session is saved
 	res.redirect(`${DISCORD_API_URL}/oauth2/authorize?${params}`)
 })
 
@@ -81,21 +93,25 @@ router.get('/callback', async (req: Request, res: Response) => {
 	const { code } = req.query
 	const verifier = req.session.codeVerifier
 
-	Logger.log('debug', `Callback received - Code: ${!!code}, Has Verifier: ${!!verifier}, Session ID: ${req.sessionID}`, 'Auth')
+	Logger.log('debug', `Callback received - Code: ${!!code}, Has Verifier: ${!!verifier}, Session ID: ${req.sessionID}, Verifier: ${verifier?.slice(0, 10)}...`, 'Auth')
 
 	// If there's no code, redirect to login
 	if (!code) {
 		Logger.log('warn', 'Missing OAuth code parameter', 'Auth')
-		delete req.session.codeVerifier
-		await req.session.save()
+		await new Promise<void>((resolve) => req.session.save(err => {
+			if (err) Logger.error('Session save error', err)
+			resolve()
+		}))
 		return res.redirect('/')
 	}
 
 	// If there's no verifier, start over
 	if (!verifier) {
-		Logger.log('warn', 'Missing code verifier', 'Auth')
-		delete req.session.codeVerifier
-		await req.session.save()
+		Logger.log('warn', `Missing code verifier for session ${req.sessionID}`, 'Auth')
+		await new Promise<void>((resolve) => req.session.save(err => {
+			if (err) Logger.error('Session save error', err)
+			resolve()
+		}))
 		return res.redirect('/')
 	}
 
@@ -118,9 +134,6 @@ router.get('/callback', async (req: Request, res: Response) => {
 			},
 		)
 
-		// Clean up verifier
-		delete req.session.codeVerifier
-		
 		// Get user data
 		const userResponse = await axios.get<DiscordUser>(
 			`${DISCORD_API_URL}/users/@me`,
@@ -134,16 +147,29 @@ router.get('/callback', async (req: Request, res: Response) => {
 		// Store user data and tokens in session
 		req.session.tokens = tokenResponse.data
 		req.session.user = userResponse.data
-		await req.session.save()
+		delete req.session.codeVerifier
 
-		Logger.log('info', `User authenticated: ${userResponse.data.username}`, 'Auth')
+		// Ensure session is saved before redirect
+		await new Promise<void>((resolve) => {
+			req.session.save((err) => {
+				if (err) {
+					Logger.error('Failed to save session after auth', err)
+				}
+				resolve()
+			})
+		})
+
+		Logger.log('info', `User authenticated: ${userResponse.data.username}, Session: ${req.sessionID}`, 'Auth')
 
 		// Redirect to verification page
 		res.redirect('/verify')
 	} catch (error: any) {
 		Logger.error('OAuth callback failed', error)
 		delete req.session.codeVerifier
-		await req.session.save()
+		await new Promise<void>((resolve) => req.session.save(err => {
+			if (err) Logger.error('Session save error', err)
+			resolve()
+		}))
 		res.redirect('/')
 	}
 })
